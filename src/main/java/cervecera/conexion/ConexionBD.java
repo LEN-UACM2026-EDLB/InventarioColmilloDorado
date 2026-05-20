@@ -18,8 +18,8 @@ public class ConexionBD {
                 + "encrypt=true;"
                 + "trustServerCertificate=true;";
 
-        this.usuario = "sa";
-        this.contrasena = "1";
+        this.usuario = "Mike";
+        this.contrasena = "1234";
     }
 
     public static ConexionBD obtenerInstancia() {
