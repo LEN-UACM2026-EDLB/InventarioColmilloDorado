@@ -48,52 +48,240 @@ Debido a que el proyecto utiliza **Microsoft SQL Server**, es obligatorio habili
 ### Paso 3.2: Montar el Esquema y Datos Iniciales
 Abre **SQL Server Management Studio (SSMS)**, conéctate a tu instancia local (`HP\MYSQL` o `localhost`), abre una **Nueva consulta (New Query)** y ejecuta el siguiente script para cargar el inventario inicial real provisto por la administración:
 
-#SQL
-CREATE DATABASE colmillo_dorado_db;
+#SQL query
+
+
+IF DB_ID('CerveceraInventarioDB') IS NOT NULL
+BEGIN
+    ALTER DATABASE CerveceraInventarioDB SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+    DROP DATABASE CerveceraInventarioDB;
+END
 GO
 
-USE colmillo_dorado_db;
+CREATE DATABASE CerveceraInventarioDB;
 GO
 
-CREATE TABLE insumos (
+USE CerveceraInventarioDB;
+GO
+
+
+CREATE TABLE Estilos (
     id INT IDENTITY(1,1) PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
-    tipo VARCHAR(20) NOT NULL CONSTRAINT CHK_InsumoTipo CHECK (tipo IN ('MALTA', 'LUPULO', 'LEVADURA')),
-    cantidad_disponible DECIMAL(10,2) NOT NULL,
-    unidad_medida VARCHAR(10) NOT NULL
-);
+    descripcion VARCHAR(255) NULL,
+    activo BIT NOT NULL DEFAULT 1,
 
-CREATE TABLE material_empaque (
-    id INT IDENTITY(1,1) PRIMARY KEY,
-    nombre VARCHAR(100) NOT NULL,
-    cantidad_disponible INT NOT NULL
-);
-
-CREATE TABLE producto_terminado (
-    id INT IDENTITY(1,1) PRIMARY KEY,
-    nombre_cerveza VARCHAR(100) NOT NULL,
-    estilo VARCHAR(50) NOT NULL,
-    cantidad_botellas INT NOT NULL
+    CONSTRAINT UQ_Estilos_Nombre UNIQUE (nombre)
 );
 GO
 
--- CARGA DE STOCK INICIAL REAL COLMILLO DORADO
-INSERT INTO insumos (nombre, tipo, cantidad_disponible, unidad_medida) VALUES
-('Malta Pilsen Rahr', 'MALTA', 10.00, 'kg'),
-('Malta Trigo Acidificada', 'MALTA', 10.00, 'kg'),
-('Malta Caramelo', 'MALTA', 5.00, 'kg'),
-('Lupulo Amarillo', 'LUPULO', 500.00, 'g'),
-('Lupulo Citrus', 'LUPULO', 500.00, 'g'),
-('Lupulo Cascade', 'LUPULO', 400.00, 'g'),
-('Levadura SafAle S-04', 'LEVADURA', 2.00, 'pz');
 
-INSERT INTO material_empaque (nombre, quantity_disponible) VALUES
-('Botella de vidrio 355ml', 200),
-('Corcholatas', 1000);
+CREATE TABLE Productos (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    nombre VARCHAR(150) NOT NULL,
+    descripcion VARCHAR(255) NULL,
+    precio DECIMAL(12,2) NOT NULL,
+    estilo_id INT NOT NULL,
+    activo BIT NOT NULL DEFAULT 1,
 
-INSERT INTO producto_terminado (nombre_cerveza, estilo, cantidad_botellas) VALUES
-('Colmillo Dorado Blend Inicial', 'Por definir', 200);
-GO 
+    CONSTRAINT FK_Productos_Estilos
+        FOREIGN KEY (estilo_id) REFERENCES Estilos(id),
+
+    CONSTRAINT CK_Productos_Precio
+        CHECK (precio >= 0)
+);
+GO
+
+
+
+CREATE TABLE Insumos (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    nombre VARCHAR(150) NOT NULL,
+    tipo VARCHAR(100) NOT NULL,
+    cantidad_disponible DECIMAL(12,3) NOT NULL DEFAULT 0,
+    unidad_medida VARCHAR(50) NOT NULL,
+
+    CONSTRAINT CK_Insumos_CantidadDisponible
+        CHECK (cantidad_disponible >= 0)
+);
+GO
+
+
+
+CREATE TABLE MovimientosInsumos (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    insumo_id INT NOT NULL,
+    tipo_movimiento CHAR(1) NOT NULL,
+    cantidad DECIMAL(12,3) NOT NULL,
+    fecha_movimiento DATETIME NOT NULL DEFAULT GETDATE(),
+    observaciones VARCHAR(255) NULL,
+
+    CONSTRAINT FK_MovimientosInsumos_Insumos
+        FOREIGN KEY (insumo_id) REFERENCES Insumos(id),
+
+    CONSTRAINT CK_MovimientosInsumos_TipoMovimiento
+        CHECK (tipo_movimiento IN ('E', 'S')),
+
+    CONSTRAINT CK_MovimientosInsumos_Cantidad
+        CHECK (cantidad > 0)
+);
+GO
+
+CREATE TABLE MovimientosProductos (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    producto_id INT NOT NULL,
+    tipo_movimiento CHAR(1) NOT NULL,
+    cantidad DECIMAL(12,3) NOT NULL,
+    fecha_movimiento DATETIME NOT NULL DEFAULT GETDATE(),
+    observaciones VARCHAR(255) NULL,
+
+    CONSTRAINT FK_MovimientosProductos_Productos
+        FOREIGN KEY (producto_id) REFERENCES Productos(id),
+
+    CONSTRAINT CK_MovimientosProductos_TipoMovimiento
+        CHECK (tipo_movimiento IN ('E', 'S')),
+
+    CONSTRAINT CK_MovimientosProductos_Cantidad
+        CHECK (cantidad > 0)
+);
+GO
+
+
+INSERT INTO Estilos (nombre, descripcion)
+VALUES
+('IPA', 'Cerveza con amargor marcado y aroma intenso a lúpulo.'),
+('Porter', 'Cerveza oscura con notas tostadas y sabor robusto.'),
+('Stout', 'Cerveza oscura con notas a café, chocolate o malta tostada.'),
+('Lager', 'Cerveza de fermentación baja, limpia y refrescante.'),
+('Pale Ale', 'Cerveza clara con equilibrio entre malta y lúpulo.');
+GO
+
+
+INSERT INTO Productos (nombre, descripcion, precio, estilo_id)
+VALUES
+('Lúpulo Salvaje', 'Cerveza artesanal estilo IPA en botella de 355 ml.', 85.00, 1),
+('Noche Oscura', 'Cerveza artesanal estilo Stout en botella de 355 ml.', 90.00, 3),
+('Puerto Negro', 'Cerveza artesanal estilo Porter en botella de 355 ml.', 88.00, 2),
+('Clara del Valle', 'Cerveza artesanal estilo Lager en botella de 355 ml.', 75.00, 4),
+('Ámbar Local', 'Cerveza artesanal estilo Pale Ale en botella de 355 ml.', 80.00, 5);
+GO
+
+
+INSERT INTO Insumos (nombre, tipo, cantidad_disponible, unidad_medida)
+VALUES
+('Malta Pale Ale', 'Malta', 50.000, 'kg'),
+('Malta Chocolate', 'Malta', 20.000, 'kg'),
+('Lúpulo Cascade', 'Lúpulo', 5.000, 'kg'),
+('Lúpulo Citra', 'Lúpulo', 3.500, 'kg'),
+('Levadura Ale', 'Levadura', 2.000, 'kg'),
+('Levadura Lager', 'Levadura', 1.500, 'kg'),
+('Botella 355 ml', 'Envase', 500.000, 'pieza'),
+('Tapa corona', 'Envase', 500.000, 'pieza'),
+('Etiqueta adhesiva', 'Empaque', 500.000, 'pieza');
+GO
+
+INSERT INTO MovimientosInsumos (insumo_id, tipo_movimiento, cantidad, observaciones)
+VALUES
+(1, 'E', 50.000, 'Compra inicial de malta Pale Ale.'),
+(2, 'E', 20.000, 'Compra inicial de malta Chocolate.'),
+(3, 'E', 5.000, 'Compra inicial de lúpulo Cascade.'),
+(4, 'E', 3.500, 'Compra inicial de lúpulo Citra.'),
+(5, 'E', 2.000, 'Compra inicial de levadura Ale.'),
+(6, 'E', 1.500, 'Compra inicial de levadura Lager.'),
+(7, 'E', 500.000, 'Compra inicial de botellas.'),
+(8, 'E', 500.000, 'Compra inicial de tapas corona.'),
+(9, 'E', 500.000, 'Compra inicial de etiquetas.');
+GO
+
+INSERT INTO MovimientosProductos (producto_id, tipo_movimiento, cantidad, observaciones)
+VALUES
+(1, 'E', 120.000, 'Producción inicial de Lúpulo Salvaje.'),
+(2, 'E', 80.000, 'Producción inicial de Noche Oscura.'),
+(3, 'E', 90.000, 'Producción inicial de Puerto Negro.'),
+(4, 'E', 150.000, 'Producción inicial de Clara del Valle.'),
+(5, 'E', 100.000, 'Producción inicial de Ámbar Local.'),
+
+(1, 'S', 12.000, 'Venta inicial.'),
+(2, 'S', 8.000, 'Venta inicial.'),
+(4, 'S', 20.000, 'Venta inicial.');
+GO
+
+CREATE VIEW vwExistenciasProductos AS
+SELECT
+    P.id,
+    P.nombre,
+    P.descripcion,
+    P.precio,
+    E.nombre AS estilo,
+    ISNULL(SUM(
+        CASE MP.tipo_movimiento
+            WHEN 'E' THEN MP.cantidad
+            WHEN 'S' THEN -MP.cantidad
+            ELSE 0
+        END
+    ), 0) AS existencia
+FROM Productos P
+INNER JOIN Estilos E ON P.estilo_id = E.id
+LEFT JOIN MovimientosProductos MP ON P.id = MP.producto_id
+WHERE P.activo = 1
+GROUP BY
+    P.id,
+    P.nombre,
+    P.descripcion,
+    P.precio,
+    E.nombre;
+GO
+
+CREATE VIEW vwHistorialMovimientosProductos AS
+SELECT
+    MP.id,
+    P.nombre AS producto,
+    E.nombre AS estilo,
+    CASE MP.tipo_movimiento
+        WHEN 'E' THEN 'Entrada'
+        WHEN 'S' THEN 'Salida'
+    END AS tipo_movimiento,
+    MP.cantidad,
+    MP.fecha_movimiento,
+    MP.observaciones
+FROM MovimientosProductos MP
+INNER JOIN Productos P ON MP.producto_id = P.id
+INNER JOIN Estilos E ON P.estilo_id = E.id;
+GO
+
+CREATE VIEW vwHistorialMovimientosInsumos AS
+SELECT
+    MI.id,
+    I.nombre AS insumo,
+    I.tipo,
+    CASE MI.tipo_movimiento
+        WHEN 'E' THEN 'Entrada'
+        WHEN 'S' THEN 'Salida'
+    END AS tipo_movimiento,
+    MI.cantidad,
+    I.unidad_medida,
+    MI.fecha_movimiento,
+    MI.observaciones
+FROM MovimientosInsumos MI
+INNER JOIN Insumos I ON MI.insumo_id = I.id;
+GO
+
+SELECT * FROM Estilos;
+SELECT * FROM Productos;
+SELECT * FROM Insumos;
+
+SELECT * 
+FROM vwExistenciasProductos
+ORDER BY nombre;
+
+SELECT *
+FROM vwHistorialMovimientosProductos
+ORDER BY fecha_movimiento DESC;
+
+SELECT *
+FROM vwHistorialMovimientosInsumos
+ORDER BY fecha_movimiento DESC;
+GO
 
 ---
 
