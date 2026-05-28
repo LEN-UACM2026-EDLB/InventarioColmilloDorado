@@ -41,10 +41,10 @@ La falta de un sistema centralizado generaba riesgos como la ruptura de stock en
 
 > *Nota: Reemplaza los siguientes marcadores con las rutas relativas de tus capturas cuando las subas al repositorio.*
 
-![Figura 1. Repositorio GitHub.](docs/imagenes/6.png)   
+![Figura 1. Repositorio GitHub.](imagenes/6.png)   
 *Figura 1. Repositorio GitHub.*
 
-![Figura 2. Estructura CerveceriaColmilloDoradoDB](docs/imagenes/7.png) 
+![Figura 2. Estructura CerveceriaColmilloDoradoDB](imagenes/7.png) 
 *Figura 2. Estructura CerveceriaColmilloDoradoDB.*
 
 ---
@@ -60,7 +60,7 @@ El sistema se estructuró siguiendo los pilares de la **Programación Orientada 
 
 ### Diagrama de clases
 
-![Figura 3. Diagrama de Clases UML](docs/imagenes/9.png)  
+![Figura 3. Diagrama de Clases UML](imagenes/9.png)  
 *Figura 3. Diagrama de Clases UML.*
 
 ---
@@ -73,14 +73,14 @@ Para elevar la calidad del software, se aplicaron dos patrones fundamentales:
 * **Propósito:** Garantizar una única instancia de conexión a SQL Server.
 * **Justificación:** Abrir conexiones es costoso. El método `getConexion()` asegura que toda la aplicación (desde los DAOs) reutilice un único canal, optimizando el rendimiento del servidor.
 
-![Figura 4. Implementación de ConexionBD en IntelliJ IDEA](docs/imagenes/4.png)
+![Figura 4. Implementación de ConexionBD en IntelliJ IDEA](imagenes/4.png)
 *Figura 4. Implementación de ConexionBD en IntelliJ IDEA.*
 
 ### 2. Patrón Creacional: Factory Method (`FabricaMovimientoInsumo` / `FabricaMovimientoProducto`)
 * **Propósito:** Desacoplar la creación de objetos de movimiento de la interfaz de usuario.
 * **Justificación:** La vista (`PanelMovimientosInsumos`) no necesita saber cómo se instancia una "Entrada" o una "Salida". La fábrica encapsula esta lógica, facilitando la extensión del sistema si en el futuro se agregan tipos como "Mermas".
 
-![Figura 5. Clases de Fábrica en el Entorno de Desarrollo](docs/imagenes/5.png) 
+![Figura 5. Clases de Fábrica en el Entorno de Desarrollo](imagenes/5.png) 
 *Figura 5. Clases de Fábrica en el Entorno de Desarrollo.*
 
 ---
@@ -100,5 +100,5 @@ Para elevar la calidad del software, se aplicaron dos patrones fundamentales:
 
 La ejecución de este proyecto permitió consolidar la teoría en una herramienta funcional. La organización del código en paquetes (`dao`, `modelo`, `vista`, `fabrica`, `conexion`) demuestra que un diseño previo reduce errores. El uso de patrones de diseño no fue solo un requisito académico, sino una solución real a problemas de acoplamiento y eficiencia de memoria.
 
-![Figura 6 Interfaz gráfica ](docs/imagenes/1.png) 
+![Figura 6 Interfaz gráfica ](imagenes/1.png) 
 *Figura 6. Interfaz gráfica (GUI) del sistema ejecutándose.*
