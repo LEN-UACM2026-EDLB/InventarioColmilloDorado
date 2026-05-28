@@ -2,6 +2,12 @@ package cervecera.modelo;
 
 import java.math.BigDecimal;
 
+/**
+ * Modelo que representa un insumo utilizado por la cervecera.
+ *
+ * Incluye reglas de negocio básicas para impedir cantidades negativas o salidas
+ * mayores a la cantidad disponible.
+ */
 public class Insumo {
 
     private int id;
@@ -28,11 +34,21 @@ public class Insumo {
         setUnidadMedida(unidadMedida);
     }
 
+    /**
+     * Incrementa la cantidad disponible del insumo.
+     *
+     * @param cantidad cantidad que se agregará al inventario.
+     */
     public void aumentarCantidad(BigDecimal cantidad) {
         validarCantidadMovimiento(cantidad);
         this.cantidadDisponible = this.cantidadDisponible.add(cantidad);
     }
 
+    /**
+     * Disminuye la cantidad disponible del insumo si hay existencia suficiente.
+     *
+     * @param cantidad cantidad que se descontará del inventario.
+     */
     public void disminuirCantidad(BigDecimal cantidad) {
         validarCantidadMovimiento(cantidad);
 
@@ -43,6 +59,9 @@ public class Insumo {
         this.cantidadDisponible = this.cantidadDisponible.subtract(cantidad);
     }
 
+    /**
+     * Valida que una cantidad de movimiento sea positiva y no nula.
+     */
     private void validarCantidadMovimiento(BigDecimal cantidad) {
         if (cantidad == null) {
             throw new IllegalArgumentException("La cantidad no puede ser nula.");

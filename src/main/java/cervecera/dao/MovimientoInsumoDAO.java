@@ -9,15 +9,32 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Clase DAO encargada de registrar y consultar movimientos de insumos.
+ *
+ * Usa transacciones para garantizar que el historial del movimiento y la cantidad
+ * disponible del insumo se actualicen como una sola operación lógica.
+ */
 public class MovimientoInsumoDAO {
 
+    /**
+     * Registra un movimiento de insumo dentro de una transacción.
+     *
+     * La transacción garantiza que el historial y la cantidad disponible se mantengan
+     * sincronizados, incluso si ocurre un error durante el proceso.
+     *
+     * @param movimiento movimiento que se desea guardar.
+     * @throws SQLException si ocurre un error al consultar, insertar o actualizar datos.
+     */
     public void registrar(MovimientoInsumo movimiento) throws SQLException {
         Connection conexion = null;
 
         try {
             conexion = ConexionBD.obtenerInstancia().obtenerConexion();
+            // Se desactiva el autocommit para controlar manualmente la transacción.
             conexion.setAutoCommit(false);
 
+            // Las salidas requieren validación previa para evitar inventario negativo.
             if (movimiento.obtenerTipoMovimiento().equals("S")) {
                 validarCantidadDisponible(
                         conexion,
@@ -29,10 +46,12 @@ public class MovimientoInsumoDAO {
             insertarMovimiento(conexion, movimiento);
             actualizarCantidadDisponible(conexion, movimiento);
 
+            // Si todas las operaciones terminan correctamente, se confirma la transacción.
             conexion.commit();
 
         } catch (SQLException | RuntimeException ex) {
             if (conexion != null) {
+                // Ante cualquier error, se revierten los cambios para no dejar datos inconsistentes.
                 conexion.rollback();
             }
 
@@ -46,6 +65,12 @@ public class MovimientoInsumoDAO {
         }
     }
 
+    /**
+     * Consulta el historial de movimientos de insumos.
+     *
+     * @return lista de movimientos ordenados del más reciente al más antiguo.
+     * @throws SQLException si ocurre un error al consultar la vista.
+     */
     public List<HistorialMovimientoInsumo> listarHistorial() throws SQLException {
         List<HistorialMovimientoInsumo> movimientos = new ArrayList<>();
 
@@ -64,6 +89,7 @@ public class MovimientoInsumoDAO {
                 """;
 
         try (
+                // try-with-resources cierra automáticamente la conexión y evita fugas de recursos.
                 Connection conexion = ConexionBD.obtenerInstancia().obtenerConexion();
                 PreparedStatement comando = conexion.prepareStatement(sql);
                 ResultSet resultado = comando.executeQuery()
@@ -87,6 +113,9 @@ public class MovimientoInsumoDAO {
         return movimientos;
     }
 
+    /**
+     * Inserta el registro histórico del movimiento usando la conexión transaccional.
+     */
     private void insertarMovimiento(Connection conexion, MovimientoInsumo movimiento) throws SQLException {
         String sql = """
                 INSERT INTO MovimientosInsumos
@@ -104,6 +133,9 @@ public class MovimientoInsumoDAO {
         }
     }
 
+    /**
+     * Actualiza la cantidad disponible del insumo según sea entrada o salida.
+     */
     private void actualizarCantidadDisponible(Connection conexion, MovimientoInsumo movimiento) throws SQLException {
         String sql;
 
@@ -129,6 +161,9 @@ public class MovimientoInsumoDAO {
         }
     }
 
+    /**
+     * Verifica que el insumo tenga cantidad suficiente antes de registrar una salida.
+     */
     private void validarCantidadDisponible(
             Connection conexion,
             int insumoId,

@@ -3,6 +3,12 @@ package cervecera.modelo;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+/**
+ * Modelo de consulta para mostrar el historial de movimientos de productos.
+ *
+ * Agrupa datos del producto, estilo, tipo de movimiento y fecha para presentarlos
+ * en la tabla de historial.
+ */
 public class HistorialMovimientoProducto {
 
     private int id;

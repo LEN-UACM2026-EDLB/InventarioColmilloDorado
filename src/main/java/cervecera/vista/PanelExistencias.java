@@ -14,6 +14,12 @@ import java.awt.BorderLayout;
 import java.sql.SQLException;
 import java.util.List;
 
+/**
+ * Panel Swing para consultar existencias de productos terminados.
+ *
+ * Muestra datos calculados desde la vista de SQL Server, evitando duplicar el stock
+ * dentro de la tabla Productos.
+ */
 public class PanelExistencias extends JPanel {
 
     private JTable tablaExistencias;
@@ -30,11 +36,17 @@ public class PanelExistencias extends JPanel {
         cargarExistencias();
     }
 
+    /**
+     * Define el layout y márgenes generales del panel.
+     */
     private void configurarPanel() {
         setLayout(new BorderLayout(10, 10));
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
     }
 
+    /**
+     * Crea componentes visuales, los agrega al contenedor y registra eventos.
+     */
     private void inicializarComponentes() {
         btnRecargar = new JButton("Recargar existencias");
 
@@ -56,6 +68,9 @@ public class PanelExistencias extends JPanel {
         btnRecargar.addActionListener(e -> cargarExistencias());
     }
 
+    /**
+     * Consulta la vista de existencias y actualiza la tabla del panel.
+     */
     private void cargarExistencias() {
         try {
             modeloTabla.setRowCount(0);

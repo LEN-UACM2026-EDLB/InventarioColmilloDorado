@@ -4,6 +4,12 @@ import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
 import java.awt.BorderLayout;
 
+/**
+ * Ventana principal del sistema.
+ *
+ * Organiza los módulos de la aplicación mediante pestañas para mantener separadas
+ * las responsabilidades de estilos, productos, insumos, movimientos y existencias.
+ */
 public class VentanaPrincipal extends JFrame {
 
     private JTabbedPane pestañas;
@@ -20,6 +26,9 @@ public class VentanaPrincipal extends JFrame {
         inicializarComponentes();
     }
 
+    /**
+     * Define propiedades básicas de la ventana principal.
+     */
     private void configurarVentana() {
         setTitle("Sistema de Inventario - Cervecera Local");
         setSize(1100, 700);
@@ -28,6 +37,9 @@ public class VentanaPrincipal extends JFrame {
         setLayout(new BorderLayout());
     }
 
+    /**
+     * Crea componentes visuales, los agrega al contenedor y registra eventos.
+     */
     private void inicializarComponentes() {
         pestañas = new JTabbedPane();
 
@@ -50,6 +62,9 @@ public class VentanaPrincipal extends JFrame {
         add(pestañas, BorderLayout.CENTER);
     }
 
+    /**
+     * Actualiza datos dependientes cuando el usuario cambia de pestaña.
+     */
     private void actualizarDatosDePestaña() {
         int indice = pestañas.getSelectedIndex();
 

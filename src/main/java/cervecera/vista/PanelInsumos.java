@@ -18,6 +18,12 @@ import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.List;
 
+/**
+ * Panel Swing para administrar insumos.
+ *
+ * Permite registrar y actualizar materia prima o materiales utilizados por la
+ * cervecera, como maltas, lúpulos, levaduras, botellas y tapas.
+ */
 public class PanelInsumos extends JPanel {
 
     private JTextField txtNombre;
@@ -45,11 +51,17 @@ public class PanelInsumos extends JPanel {
         cargarInsumos();
     }
 
+    /**
+     * Define el layout y márgenes generales del panel.
+     */
     private void configurarPanel() {
         setLayout(new BorderLayout(10, 10));
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
     }
 
+    /**
+     * Crea componentes visuales, los agrega al contenedor y registra eventos.
+     */
     private void inicializarComponentes() {
         JPanel panelFormulario = new JPanel(new GridLayout(5, 2, 8, 8));
         panelFormulario.setBorder(BorderFactory.createTitledBorder("Datos del insumo"));
@@ -111,6 +123,9 @@ public class PanelInsumos extends JPanel {
         });
     }
 
+    /**
+     * Consulta insumos desde la base de datos y actualiza los componentes visuales.
+     */
     private void cargarInsumos() {
         try {
             modeloTabla.setRowCount(0);
@@ -132,6 +147,9 @@ public class PanelInsumos extends JPanel {
         }
     }
 
+    /**
+     * Valida los datos capturados y solicita al DAO guardar un insumo nuevo.
+     */
     private void guardarInsumo() {
         try {
             Insumo insumo = construirInsumoDesdeFormulario();
@@ -155,6 +173,9 @@ public class PanelInsumos extends JPanel {
         }
     }
 
+    /**
+     * Actualiza el insumo seleccionado usando los datos actuales del formulario.
+     */
     private void actualizarInsumo() {
         if (insumoSeleccionadoId == 0) {
             JOptionPane.showMessageDialog(this, "Selecciona un insumo para actualizar.");
@@ -185,6 +206,11 @@ public class PanelInsumos extends JPanel {
         }
     }
 
+    /**
+     * Convierte los valores del formulario en un objeto Insumo válido.
+     *
+     * @return insumo listo para ser enviado al DAO.
+     */
     private Insumo construirInsumoDesdeFormulario() {
         String nombre = txtNombre.getText();
         String tipo = txtTipo.getText();
@@ -200,6 +226,12 @@ public class PanelInsumos extends JPanel {
         );
     }
 
+    /**
+     * Convierte y valida una cantidad capturada por el usuario.
+     *
+     * @param textoCantidad valor escrito en el campo de texto.
+     * @return cantidad convertida a BigDecimal.
+     */
     private BigDecimal convertirCantidad(String textoCantidad) {
         if (textoCantidad == null || textoCantidad.trim().isEmpty()) {
             throw new IllegalArgumentException("La cantidad disponible es obligatoria.");
@@ -213,6 +245,9 @@ public class PanelInsumos extends JPanel {
         }
     }
 
+    /**
+     * Carga en el formulario los datos del insumo seleccionado en la tabla.
+     */
     private void seleccionarInsumo() {
         int fila = tablaInsumos.getSelectedRow();
 
@@ -228,6 +263,9 @@ public class PanelInsumos extends JPanel {
         txtUnidadMedida.setText(modeloTabla.getValueAt(fila, 4).toString());
     }
 
+    /**
+     * Limpia los campos y reinicia la selección del formulario.
+     */
     private void limpiarFormulario() {
         insumoSeleccionadoId = 0;
 
@@ -240,6 +278,12 @@ public class PanelInsumos extends JPanel {
         txtNombre.requestFocus();
     }
 
+    /**
+     * Muestra errores técnicos en un cuadro de diálogo para informar al usuario.
+     *
+     * @param mensaje descripción general del error.
+     * @param ex excepción original con el detalle técnico.
+     */
     private void mostrarError(String mensaje, Exception ex) {
         JOptionPane.showMessageDialog(
                 this,

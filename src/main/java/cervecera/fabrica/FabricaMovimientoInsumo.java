@@ -7,8 +7,23 @@ import cervecera.modelo.SalidaInsumo;
 
 import java.math.BigDecimal;
 
+/**
+ * Fábrica responsable de crear movimientos de insumos.
+ *
+ * Aplica Factory Method para decidir si debe construirse una entrada o una salida
+ * sin delegar esa decisión a la interfaz gráfica.
+ */
 public class FabricaMovimientoInsumo {
 
+    /**
+     * Crea una instancia concreta de movimiento de insumo según el tipo recibido.
+     *
+     * @param tipoMovimiento E para entrada o S para salida.
+     * @param insumo insumo afectado por el movimiento.
+     * @param cantidad cantidad del movimiento.
+     * @param observaciones comentario opcional del movimiento.
+     * @return movimiento de insumo correspondiente al tipo indicado.
+     */
     public MovimientoInsumo crearMovimiento(
             String tipoMovimiento,
             Insumo insumo,

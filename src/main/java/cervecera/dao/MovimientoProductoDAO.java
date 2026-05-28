@@ -9,9 +9,25 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Clase DAO encargada de registrar y consultar movimientos de productos terminados.
+ *
+ * Antes de registrar una salida, valida que exista inventario suficiente según la
+ * vista de existencias calculada en la base de datos.
+ */
 public class MovimientoProductoDAO {
 
+    /**
+     * Registra un movimiento de producto terminado.
+     *
+     * Si el movimiento es una salida, valida previamente que exista inventario
+     * suficiente para no permitir existencias negativas.
+     *
+     * @param movimiento movimiento que se desea guardar.
+     * @throws SQLException si ocurre un error al consultar o insertar datos.
+     */
     public void registrar(MovimientoProducto movimiento) throws SQLException {
+        // Las salidas requieren validación previa para evitar inventario negativo.
         if (movimiento.obtenerTipoMovimiento().equals("S")) {
             validarExistenciaSuficiente(
                     movimiento.getProducto().getId(),
@@ -26,6 +42,7 @@ public class MovimientoProductoDAO {
                 """;
 
         try (
+                // try-with-resources cierra automáticamente la conexión y evita fugas de recursos.
                 Connection conexion = ConexionBD.obtenerInstancia().obtenerConexion();
                 PreparedStatement comando = conexion.prepareStatement(sql)
         ) {
@@ -38,6 +55,12 @@ public class MovimientoProductoDAO {
         }
     }
 
+    /**
+     * Consulta el historial de movimientos de productos.
+     *
+     * @return lista de movimientos ordenados del más reciente al más antiguo.
+     * @throws SQLException si ocurre un error al consultar la vista.
+     */
     public List<HistorialMovimientoProducto> listarHistorial() throws SQLException {
         List<HistorialMovimientoProducto> movimientos = new ArrayList<>();
 
@@ -55,6 +78,7 @@ public class MovimientoProductoDAO {
                 """;
 
         try (
+                // try-with-resources cierra automáticamente la conexión y evita fugas de recursos.
                 Connection conexion = ConexionBD.obtenerInstancia().obtenerConexion();
                 PreparedStatement comando = conexion.prepareStatement(sql);
                 ResultSet resultado = comando.executeQuery()
@@ -77,6 +101,9 @@ public class MovimientoProductoDAO {
         return movimientos;
     }
 
+    /**
+     * Verifica que el producto tenga existencia suficiente antes de registrar una salida.
+     */
     private void validarExistenciaSuficiente(int productoId, BigDecimal cantidadSalida) throws SQLException {
         BigDecimal existenciaActual = obtenerExistenciaProducto(productoId);
 
@@ -87,6 +114,9 @@ public class MovimientoProductoDAO {
         }
     }
 
+    /**
+     * Consulta la existencia actual de un producto desde la vista SQL.
+     */
     private BigDecimal obtenerExistenciaProducto(int productoId) throws SQLException {
         String sql = """
                 SELECT existencia
@@ -95,6 +125,7 @@ public class MovimientoProductoDAO {
                 """;
 
         try (
+                // try-with-resources cierra automáticamente la conexión y evita fugas de recursos.
                 Connection conexion = ConexionBD.obtenerInstancia().obtenerConexion();
                 PreparedStatement comando = conexion.prepareStatement(sql)
         ) {

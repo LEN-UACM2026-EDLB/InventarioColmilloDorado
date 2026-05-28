@@ -3,6 +3,12 @@ package cervecera.modelo;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+/**
+ * Clase abstracta base para los movimientos de insumos.
+ *
+ * Define los datos comunes de una entrada o salida y obliga a las clases hijas a
+ * implementar la forma en que el movimiento afecta al inventario.
+ */
 public abstract class MovimientoInsumo {
 
     private int id;
@@ -19,8 +25,16 @@ public abstract class MovimientoInsumo {
         this.fechaMovimiento = LocalDateTime.now();
     }
 
+    /**
+     * Aplica el efecto concreto del movimiento sobre el inventario.
+     */
     public abstract void aplicarMovimiento();
 
+    /**
+     * Obtiene la clave que representa el tipo de movimiento.
+     *
+     * @return E para entrada o S para salida.
+     */
     public abstract String obtenerTipoMovimiento();
 
     public int getId() {

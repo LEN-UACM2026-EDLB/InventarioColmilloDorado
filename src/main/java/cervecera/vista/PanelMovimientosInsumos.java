@@ -24,6 +24,12 @@ import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.List;
 
+/**
+ * Panel Swing para registrar entradas y salidas de insumos.
+ *
+ * Utiliza una fábrica para construir el movimiento correcto y un DAO para persistir
+ * la operación en SQL Server.
+ */
 public class PanelMovimientosInsumos extends JPanel {
 
     private JComboBox<Insumo> cbInsumo;
@@ -52,11 +58,17 @@ public class PanelMovimientosInsumos extends JPanel {
         cargarHistorial();
     }
 
+    /**
+     * Define el layout y márgenes generales del panel.
+     */
     private void configurarPanel() {
         setLayout(new BorderLayout(10, 10));
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
     }
 
+    /**
+     * Crea componentes visuales, los agrega al contenedor y registra eventos.
+     */
     private void inicializarComponentes() {
         JPanel panelFormulario = new JPanel(new GridLayout(5, 2, 8, 8));
         panelFormulario.setBorder(BorderFactory.createTitledBorder("Movimiento de insumo"));
@@ -108,6 +120,9 @@ public class PanelMovimientosInsumos extends JPanel {
         btnRecargar.addActionListener(e -> recargarDatos());
     }
 
+    /**
+     * Consulta insumos desde la base de datos y actualiza los componentes visuales.
+     */
     private void cargarInsumos() {
         try {
             cbInsumo.removeAllItems();
@@ -123,6 +138,9 @@ public class PanelMovimientosInsumos extends JPanel {
         }
     }
 
+    /**
+     * Recarga la tabla de historial desde la vista correspondiente en SQL Server.
+     */
     private void cargarHistorial() {
         try {
             modeloTabla.setRowCount(0);
@@ -147,6 +165,9 @@ public class PanelMovimientosInsumos extends JPanel {
         }
     }
 
+    /**
+     * Construye y registra un movimiento a partir de los datos capturados en pantalla.
+     */
     private void registrarMovimiento() {
         try {
             Insumo insumo = (Insumo) cbInsumo.getSelectedItem();
@@ -188,9 +209,15 @@ public class PanelMovimientosInsumos extends JPanel {
         }
     }
 
+    /**
+     * Traduce la opción visible del combo a la clave usada por la base de datos.
+     *
+     * @return E para entrada o S para salida.
+     */
     private String obtenerTipoMovimientoSeleccionado() {
         String opcion = cbTipoMovimiento.getSelectedItem().toString();
 
+        // La interfaz muestra texto descriptivo, pero la base de datos usa claves cortas.
         if (opcion.equals("Entrada")) {
             return "E";
         }
@@ -198,6 +225,12 @@ public class PanelMovimientosInsumos extends JPanel {
         return "S";
     }
 
+    /**
+     * Convierte y valida una cantidad capturada por el usuario.
+     *
+     * @param textoCantidad valor escrito en el campo de texto.
+     * @return cantidad convertida a BigDecimal.
+     */
     private BigDecimal convertirCantidad(String textoCantidad) {
         if (textoCantidad == null || textoCantidad.trim().isEmpty()) {
             throw new IllegalArgumentException("La cantidad es obligatoria.");
@@ -211,17 +244,29 @@ public class PanelMovimientosInsumos extends JPanel {
         }
     }
 
+    /**
+     * Limpia los campos y reinicia la selección del formulario.
+     */
     private void limpiarFormulario() {
         txtCantidad.setText("");
         txtObservaciones.setText("");
         txtCantidad.requestFocus();
     }
 
+    /**
+     * Actualiza los datos mostrados en combos y tablas del panel.
+     */
     private void recargarDatos() {
         cargarInsumos();
         cargarHistorial();
     }
 
+    /**
+     * Muestra errores técnicos en un cuadro de diálogo para informar al usuario.
+     *
+     * @param mensaje descripción general del error.
+     * @param ex excepción original con el detalle técnico.
+     */
     private void mostrarError(String mensaje, Exception ex) {
         JOptionPane.showMessageDialog(
                 this,
