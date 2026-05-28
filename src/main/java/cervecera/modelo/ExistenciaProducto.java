@@ -2,6 +2,12 @@ package cervecera.modelo;
 
 import java.math.BigDecimal;
 
+/**
+ * Modelo de solo lectura usado para mostrar existencias de productos.
+ *
+ * Sus datos provienen de una vista SQL, por lo que no modifica información del
+ * inventario; únicamente transporta datos hacia la interfaz.
+ */
 public class ExistenciaProducto {
 
     private int id;

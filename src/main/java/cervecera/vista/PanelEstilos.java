@@ -17,6 +17,12 @@ import java.awt.GridLayout;
 import java.sql.SQLException;
 import java.util.List;
 
+/**
+ * Panel Swing para administrar el catálogo de estilos de cerveza.
+ *
+ * Contiene el formulario, la tabla y los eventos necesarios para crear, actualizar,
+ * desactivar y recargar estilos.
+ */
 public class PanelEstilos extends JPanel {
 
     private JTextField txtNombre;
@@ -44,11 +50,17 @@ public class PanelEstilos extends JPanel {
         cargarEstilos();
     }
 
+    /**
+     * Define el layout y márgenes generales del panel.
+     */
     private void configurarPanel() {
         setLayout(new BorderLayout(10, 10));
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
     }
 
+    /**
+     * Crea componentes visuales, los agrega al contenedor y registra eventos.
+     */
     private void inicializarComponentes() {
         JPanel panelFormulario = new JPanel(new GridLayout(3, 2, 8, 8));
         panelFormulario.setBorder(BorderFactory.createTitledBorder("Datos del estilo"));
@@ -107,6 +119,9 @@ public class PanelEstilos extends JPanel {
         });
     }
 
+    /**
+     * Recarga la tabla de estilos desde la base de datos.
+     */
     public void cargarEstilos() {
         try {
             modeloTabla.setRowCount(0);
@@ -127,6 +142,9 @@ public class PanelEstilos extends JPanel {
         }
     }
 
+    /**
+     * Valida los datos capturados y solicita al DAO guardar un estilo nuevo.
+     */
     private void guardarEstilo() {
         try {
             Estilo estilo = construirEstiloDesdeFormulario();
@@ -145,6 +163,9 @@ public class PanelEstilos extends JPanel {
         }
     }
 
+    /**
+     * Actualiza el estilo seleccionado usando los datos actuales del formulario.
+     */
     private void actualizarEstilo() {
         if (estiloSeleccionadoId == 0) {
             JOptionPane.showMessageDialog(this, "Selecciona un estilo para actualizar.");
@@ -170,6 +191,9 @@ public class PanelEstilos extends JPanel {
         }
     }
 
+    /**
+     * Realiza una baja lógica del estilo seleccionado tras confirmación del usuario.
+     */
     private void desactivarEstilo() {
         if (estiloSeleccionadoId == 0) {
             JOptionPane.showMessageDialog(this, "Selecciona un estilo para desactivar.");
@@ -200,6 +224,11 @@ public class PanelEstilos extends JPanel {
         }
     }
 
+    /**
+     * Convierte los valores del formulario en un objeto Estilo válido.
+     *
+     * @return estilo listo para ser enviado al DAO.
+     */
     private Estilo construirEstiloDesdeFormulario() {
         String nombre = txtNombre.getText();
         String descripcion = txtDescripcion.getText();
@@ -212,6 +241,9 @@ public class PanelEstilos extends JPanel {
         );
     }
 
+    /**
+     * Carga en el formulario los datos del estilo seleccionado en la tabla.
+     */
     private void seleccionarEstilo() {
         int fila = tablaEstilos.getSelectedRow();
 
@@ -227,6 +259,9 @@ public class PanelEstilos extends JPanel {
         txtDescripcion.setText(descripcion == null ? "" : descripcion.toString());
     }
 
+    /**
+     * Limpia los campos y reinicia la selección del formulario.
+     */
     private void limpiarFormulario() {
         estiloSeleccionadoId = 0;
 
@@ -237,6 +272,11 @@ public class PanelEstilos extends JPanel {
         txtNombre.requestFocus();
     }
 
+    /**
+     * Muestra advertencias de validación sin tratarse como errores del sistema.
+     *
+     * @param mensaje texto que se mostrará al usuario.
+     */
     private void mostrarAdvertencia(String mensaje) {
         JOptionPane.showMessageDialog(
                 this,
@@ -246,6 +286,12 @@ public class PanelEstilos extends JPanel {
         );
     }
 
+    /**
+     * Muestra errores técnicos en un cuadro de diálogo para informar al usuario.
+     *
+     * @param mensaje descripción general del error.
+     * @param ex excepción original con el detalle técnico.
+     */
     private void mostrarError(String mensaje, Exception ex) {
         JOptionPane.showMessageDialog(
                 this,

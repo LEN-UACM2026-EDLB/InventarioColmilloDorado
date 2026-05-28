@@ -21,6 +21,12 @@ import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.List;
 
+/**
+ * Panel Swing para administrar productos terminados.
+ *
+ * Coordina el formulario de captura, la tabla de consulta y la selección del estilo
+ * asociado a cada producto.
+ */
 public class PanelProductos extends JPanel {
 
     private JTextField txtNombre;
@@ -52,11 +58,17 @@ public class PanelProductos extends JPanel {
         cargarProductos();
     }
 
+    /**
+     * Define el layout y márgenes generales del panel.
+     */
     private void configurarPanel() {
         setLayout(new BorderLayout(10, 10));
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
     }
 
+    /**
+     * Crea componentes visuales, los agrega al contenedor y registra eventos.
+     */
     private void inicializarComponentes() {
         JPanel panelFormulario = new JPanel(new GridLayout(5, 2, 8, 8));
         panelFormulario.setBorder(BorderFactory.createTitledBorder("Datos del producto"));
@@ -136,6 +148,9 @@ public class PanelProductos extends JPanel {
         }
     }
 
+    /**
+     * Consulta productos desde la base de datos y actualiza los componentes visuales.
+     */
     private void cargarProductos() {
         try {
             modeloTabla.setRowCount(0);
@@ -157,6 +172,9 @@ public class PanelProductos extends JPanel {
         }
     }
 
+    /**
+     * Valida los datos capturados y solicita al DAO guardar un producto nuevo.
+     */
     private void guardarProducto() {
         try {
             Producto producto = construirProductoDesdeFormulario();
@@ -180,6 +198,9 @@ public class PanelProductos extends JPanel {
         }
     }
 
+    /**
+     * Actualiza el producto seleccionado usando los datos actuales del formulario.
+     */
     private void actualizarProducto() {
         if (productoSeleccionadoId == 0) {
             JOptionPane.showMessageDialog(this, "Selecciona un producto para actualizar.");
@@ -210,6 +231,9 @@ public class PanelProductos extends JPanel {
         }
     }
 
+    /**
+     * Realiza una baja lógica del producto seleccionado tras confirmación del usuario.
+     */
     private void desactivarProducto() {
         if (productoSeleccionadoId == 0) {
             JOptionPane.showMessageDialog(this, "Selecciona un producto para desactivar.");
@@ -240,6 +264,11 @@ public class PanelProductos extends JPanel {
         }
     }
 
+    /**
+     * Convierte los valores del formulario en un objeto Producto válido.
+     *
+     * @return producto listo para ser enviado al DAO.
+     */
     private Producto construirProductoDesdeFormulario() {
         String nombre = txtNombre.getText();
         String descripcion = txtDescripcion.getText();
@@ -261,6 +290,12 @@ public class PanelProductos extends JPanel {
         );
     }
 
+    /**
+     * Convierte y valida el precio capturado por el usuario.
+     *
+     * @param textoPrecio valor escrito en el campo de texto.
+     * @return precio convertido a BigDecimal.
+     */
     private BigDecimal convertirPrecio(String textoPrecio) {
         if (textoPrecio == null || textoPrecio.trim().isEmpty()) {
             throw new IllegalArgumentException("El precio es obligatorio.");
@@ -274,6 +309,9 @@ public class PanelProductos extends JPanel {
         }
     }
 
+    /**
+     * Carga en el formulario los datos del producto seleccionado en la tabla.
+     */
     private void seleccionarProducto() {
         int fila = tablaProductos.getSelectedRow();
 
@@ -301,6 +339,11 @@ public class PanelProductos extends JPanel {
         }
     }
 
+    /**
+     * Selecciona en el combo el estilo que coincide con el identificador indicado.
+     *
+     * @param estiloId identificador del estilo que se debe seleccionar.
+     */
     private void seleccionarEstilo(int estiloId) {
         for (int i = 0; i < cbEstilo.getItemCount(); i++) {
             Estilo estilo = cbEstilo.getItemAt(i);
@@ -312,6 +355,9 @@ public class PanelProductos extends JPanel {
         }
     }
 
+    /**
+     * Limpia los campos y reinicia la selección del formulario.
+     */
     private void limpiarFormulario() {
         productoSeleccionadoId = 0;
 
@@ -327,11 +373,20 @@ public class PanelProductos extends JPanel {
         txtNombre.requestFocus();
     }
 
+    /**
+     * Recarga los catálogos y la tabla del panel para reflejar cambios recientes.
+     */
     public void recargarDatos() {
         cargarEstilos();
         cargarProductos();
     }
 
+    /**
+     * Muestra errores técnicos en un cuadro de diálogo para informar al usuario.
+     *
+     * @param mensaje descripción general del error.
+     * @param ex excepción original con el detalle técnico.
+     */
     private void mostrarError(String mensaje, Exception ex) {
         JOptionPane.showMessageDialog(
                 this,

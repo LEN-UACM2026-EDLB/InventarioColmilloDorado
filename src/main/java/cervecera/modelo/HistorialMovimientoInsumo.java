@@ -3,6 +3,12 @@ package cervecera.modelo;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+/**
+ * Modelo de consulta para mostrar el historial de movimientos de insumos.
+ *
+ * Agrupa información del movimiento, del insumo y de su unidad de medida para
+ * presentarla en tablas de la interfaz.
+ */
 public class HistorialMovimientoInsumo {
 
     private int id;

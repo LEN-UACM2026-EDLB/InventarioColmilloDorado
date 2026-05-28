@@ -2,6 +2,12 @@ package cervecera.modelo;
 
 import java.math.BigDecimal;
 
+/**
+ * Modelo que representa un producto terminado vendido por la cervecera.
+ *
+ * El producto no almacena existencia directamente; su inventario se calcula a
+ * partir de los movimientos registrados en la base de datos.
+ */
 public class Producto {
 
     private int id;

@@ -3,6 +3,12 @@ package cervecera.modelo;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+/**
+ * Clase abstracta base para los movimientos de productos terminados.
+ *
+ * Define los datos comunes de entrada y salida, dejando a las clases hijas la
+ * definición del tipo de movimiento y el signo de la cantidad.
+ */
 public abstract class MovimientoProducto {
 
     private int id;
@@ -19,8 +25,18 @@ public abstract class MovimientoProducto {
         this.fechaMovimiento = LocalDateTime.now();
     }
 
+    /**
+     * Obtiene la clave que representa el tipo de movimiento.
+     *
+     * @return E para entrada o S para salida.
+     */
     public abstract String obtenerTipoMovimiento();
 
+    /**
+     * Obtiene la cantidad con signo para cálculos de inventario.
+     *
+     * @return cantidad positiva o negativa según el tipo de movimiento.
+     */
     public abstract BigDecimal obtenerCantidadConSigno();
 
     public int getId() {

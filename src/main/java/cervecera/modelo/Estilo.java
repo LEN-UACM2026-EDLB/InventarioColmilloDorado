@@ -1,5 +1,11 @@
 package cervecera.modelo;
 
+/**
+ * Modelo que representa un estilo de cerveza.
+ *
+ * Funciona como catálogo para clasificar los productos, por ejemplo IPA, Stout,
+ * Porter o Lager.
+ */
 public class Estilo {
 
     private int id;
